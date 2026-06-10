@@ -1240,16 +1240,18 @@ function checkEmpiricalVsTheory() {
         if (s.total < 100) return;
         
         const theory = game.theory;
-        const totalCats = Object.values(theory.cats).reduce((a, c) => a + c.c, 0);
         
         // Проверяем каждую категорию
         Object.entries(theory.cats).forEach(([catKey, catData]) => {
-            const expectedFreq = catData.c / totalCats; // теоретическая частота
+            const expectedFreq = catData.c / theory.total; // абсолютная вероятность за тираж
             const empiricalCount = s.categories[catKey] || 0;
             const empiricalFreq = empiricalCount / s.total;
             
-            // Если расхождение > 50% и категория достаточно частая (>1%)
-            if (expectedFreq > 0.01 && empiricalCount > 0) {
+            // Ожидаемое количество выигрышей в этой категории
+            const expectedCount = s.total * expectedFreq;
+            
+            // Проверяем только категории с ожидаемым количеством >= 5 (минимум для стат. значимости)
+            if (expectedCount >= 5) {
                 const diff = Math.abs(empiricalFreq - expectedFreq) / expectedFreq;
                 if (diff > 0.5) {
                     warnings.push({
