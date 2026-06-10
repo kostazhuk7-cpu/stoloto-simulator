@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Столото Симулятор v2 — Все игры + Мультивыбор</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <h1>Столото Симулятор v2</h1>
+        <p class="subtitle">Все игры Спортлото параллельно + Мультивыбор + Сравнение шансов</p>
+    </header>
+
+    <main class="container">
+        <!-- Левая панель: Управление -->
+        <aside class="panel panel-left">
+            <h2>Управление</h2>
+            
+            <section class="section">
+                <h3>Генератор (ГСЧ)</h3>
+                <select id="rngSource">
+                    <option value="math">Math.random() (PRNG)</option>
+                    <option value="crypto">crypto.getRandomValues() (CSPRNG)</option>
+                    <option value="time">Time-seed + xorshift</option>
+                    <option value="hybrid">Hybrid (Crypto + Time)</option>
+                    <option value="random">Случайный ГСЧ каждый тираж</option>
+                </select>
+                <div id="rngInfo" class="info-text">Math.random() — стандартный PRNG</div>
+            </section>
+
+            <section class="section">
+                <h3>Стратегия подставщика</h3>
+                <select id="strategy">
+                    <option value="random">Случайный выбор</option>
+                    <option value="frequency">Горячие числа (частотный)</option>
+                    <option value="cold">Холодные числа (редкие)</option>
+                    <option value="mixed">Смешанная стратегия</option>
+                </select>
+                <div id="strategyInfo" class="info-text">Случайный выбор каждый тираж</div>
+            </section>
+
+            <section class="section">
+                <h3>Мультивыбор (развёрнутая ставка)</h3>
+                <label class="toggle-label">
+                    <input type="checkbox" id="expandedToggle">
+                    <span class="toggle-slider"></span>
+                    <span class="toggle-text">Включить развёрнутую ставку</span>
+                </label>
+                <div class="info-text">Позволяет выбрать больше чисел, чем минимум</div>
+            </section>
+
+            <section class="section">
+                <h3>Симуляция</h3>
+                <label>Интервал (мс):</label>
+                <input type="number" id="intervalMs" value="50" min="1" max="5000">
+                <button id="toggleBtn" class="btn btn-primary">▶ Запустить все игры</button>
+                <button id="clearBtn" class="btn btn-danger">Сбросить всё</button>
+            </section>
+
+            <section class="section">
+                <h3>Лог</h3>
+                <div id="log" class="log"></div>
+                <button id="exportBtn" class="btn btn-small">Экспорт CSV</button>
+                <button id="exportJsonBtn" class="btn btn-small">Экспорт JSON (логи)</button>
+                <button id="validateBtn" class="btn btn-small">Валидация правил</button>
+            </section>
+        </aside>
+
+        <!-- Центральная панель: Игры -->
+        <section class="panel panel-center">
+            <h2>Активные игры <span id="totalDraws">0</span> тиражей</h2>
+            <div id="gameContainer" class="games-grid"></div>
+        </section>
+
+        <!-- Правая панель: Статистика -->
+        <aside class="panel panel-right">
+            <h2>Сравнение шансов</h2>
+
+            <section class="section">
+                <h3>Анализ</h3>
+                <div class="analysis-box">
+                    <div class="analysis-item">
+                        <span class="label">Лучшая игра по ROI:</span>
+                        <span id="bestROI" class="value">—</span>
+                    </div>
+                    <div class="analysis-item">
+                        <span class="label">Чаще выигрывает:</span>
+                        <span id="bestWinRate" class="value">—</span>
+                    </div>
+                    <div class="analysis-item">
+                        <span class="label">Самый дешёвый билет:</span>
+                        <span id="cheapest" class="value">—</span>
+                    </div>
+                    <div class="analysis-item">
+                        <span class="label">Лучший шанс на джекпот:</span>
+                        <span id="bestJackpot" class="value">—</span>
+                    </div>
+                </div>
+            </section>
+        </aside>
+    </main>
+
+    <!-- Сводная таблица внизу -->
+    <section class="panel panel-bottom">
+        <h2>Сводная таблица по всем играм</h2>
+        <div class="table-wrapper">
+            <table class="summary-table">
+                <thead>
+                    <tr>
+                        <th>Игра</th>
+                        <th>Цена</th>
+                        <th>Тиражей</th>
+                        <th>Побед</th>
+                        <th>%</th>
+                        <th>Джекпот</th>
+                        <th>Любой выигрыш</th>
+                        <th>Ср. выигрыш</th>
+                        <th>Сумма выигрыша</th>
+                        <th>ROI</th>
+                        <th>Баланс</th>
+                    </tr>
+                </thead>
+                <tbody id="summaryTable"></tbody>
+            </table>
+        </div>
+    </section>
+
+    <footer>
+        <p>Столото Симулятор v2.0 — Сравнение всех игр. Матожидание всегда отрицательное.</p>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
