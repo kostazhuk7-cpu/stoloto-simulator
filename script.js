@@ -401,7 +401,7 @@ const gameDefinitions = {
         ],
         theory: {
             total: 2704156,
-            cats: { 12: { c: 1, o: 2704156 }, 0: { c: 1, o: 2704156 }, 11: { c: 144, o: 18779 }, 1: { c: 144, o: 18779 }, 10: { c: 4356, o: 621 }, 2: { c: 4356, o: 621 }, 9: { c: 87120, o: 31 }, 3: { c: 87120, o: 31 }, 8: { c: 1089000, o: 2 }, 4: { c: 1089000, o: 2 } }
+            cats: { 12: { c: 1, o: 2704156 }, 0: { c: 1, o: 2704156 }, 11: { c: 144, o: 18779 }, 1: { c: 144, o: 18779 }, 10: { c: 4356, o: 621 }, 2: { c: 4356, o: 621 }, 9: { c: 48400, o: 56 }, 3: { c: 48400, o: 56 }, 8: { c: 245025, o: 11 }, 4: { c: 245025, o: 11 } }
         }
     },
     'rapido': {
@@ -466,7 +466,7 @@ const gameDefinitions = {
         ],
         theory: {
             total: 1646492110120,
-            cats: { 10: { c: 1, o: 1646492110120 }, 9: { c: 200, o: 8232460551 }, 8: { c: 10845, o: 151820387 }, 7: { c: 296010, o: 5562275 }, 6: { c: 4843800, o: 339918 }, 5: { c: 49564128, o: 33219 }, 4: { c: 341149446, o: 4827 }, 3: { c: 1595189995, o: 1032 }, 2: { c: 4909869240, o: 335 }, 1: { c: 9353354030, o: 176 }, 0: { c: 8217829576, o: 200 } }
+            cats: { 10: { c: 184756, o: 8911711 }, 9: { c: 10077600, o: 163381 }, 8: { c: 222966900, o: 7384 }, 7: { c: 2863573200, o: 575 }, 6: { c: 24221109900, o: 68 }, 5: { c: 136264914000, o: 12 }, 4: { c: 520676256000, o: 3 }, 3: { c: 1311738120000, o: 1 }, 2: { c: 2076436080000, o: 1 }, 1: { c: 1932530808000, o: 1 }, 0: { c: 753940275000, o: 2 } }
         }
     },
     'ruslotto': {
@@ -515,11 +515,65 @@ const gameDefinitions = {
             { match: 0, name: '0 чисел', multiplier: 0 }
         ],
         theory: {
-            total: 96059601,
-            cats: { 4: { c: 1, o: 96059601 }, 3: { c: 392, o: 245050 }, 2: { c: 57624, o: 1667 }, 1: { c: 3764376, o: 26 }, 0: { c: 92236824, o: 1 } }
+            total: 3764376,
+            cats: { 4: { c: 1, o: 3764376 }, 3: { c: 380, o: 9906 }, 2: { c: 26790, o: 140 }, 1: { c: 553660, o: 7 }, 0: { c: 3183545, o: 1 } }
         }
     }
 };
+
+// ==================== THEORY VALIDATOR ====================
+function validateTheory() {
+    const errors = [];
+    
+    Object.entries(gameDefinitions).forEach(([gameKey, game]) => {
+        if (game.type === 'bingo') return; // Бинго проверяется отдельно
+        
+        let expectedTotal;
+        if (gameKey === 'keno') {
+            // КЕНО: C(80,10)
+            expectedTotal = combinations(80, 10);
+        } else if (gameKey === 'allornothing') {
+            // Всё или Ничего: C(24,12)
+            expectedTotal = combinations(24, 12);
+        } else if (gameKey === 'zodiac') {
+            // Зодиак: C(99,4)
+            expectedTotal = combinations(99, 4);
+        } else if (game.fields.length === 1) {
+            // Одно поле: C(max, count)
+            const f = game.fields[0];
+            expectedTotal = combinations(f.max, f.count);
+        } else if (game.fields.length === 2) {
+            // Два поля: C(max1, count1) * C(max2, count2)
+            const f1 = game.fields[0];
+            const f2 = game.fields[1];
+            expectedTotal = combinations(f1.max, f1.count) * combinations(f2.max, f2.count);
+        } else {
+            return;
+        }
+        
+        const actualTotal = game.theory.total;
+        if (Math.abs(expectedTotal - actualTotal) > 1) {
+            errors.push(`${game.name}: theory.total=${actualTotal}, но должно быть ${expectedTotal}`);
+        }
+        
+        // Проверяем сумму категорий
+        const sumCats = Object.values(game.theory.cats).reduce((a, c) => a + c.c, 0);
+        if (Math.abs(sumCats - actualTotal) > 1) {
+            errors.push(`${game.name}: сумма категорий=${sumCats}, но должно быть ${actualTotal}`);
+        }
+    });
+    
+    if (errors.length > 0) {
+        console.error('[THEORY VALIDATION ERRORS]', errors);
+        // Сохраняем ошибки для отображения в UI
+        window.theoryValidationErrors = errors;
+    } else {
+        console.log('[THEORY VALIDATION] Все теоретические данные корректны');
+        window.theoryValidationErrors = [];
+    }
+    
+    return errors;
+}
 
 // ==================== BINGO COMPETITION ====================
 const BINGO_CONFIG = {
@@ -1174,6 +1228,46 @@ function updateGameUI(gameKey, winning, player, result) {
     `;
 }
 
+function checkEmpiricalVsTheory() {
+    const warnings = [];
+    const allKeys = Object.keys(gameDefinitions);
+    
+    allKeys.forEach(key => {
+        const game = gameDefinitions[key];
+        const s = state.stats[key] || { total: 0, wins: 0, categories: {} };
+        
+        // Проверяем только если было достаточно тиражей (минимум 100)
+        if (s.total < 100) return;
+        
+        const theory = game.theory;
+        const totalCats = Object.values(theory.cats).reduce((a, c) => a + c.c, 0);
+        
+        // Проверяем каждую категорию
+        Object.entries(theory.cats).forEach(([catKey, catData]) => {
+            const expectedFreq = catData.c / totalCats; // теоретическая частота
+            const empiricalCount = s.categories[catKey] || 0;
+            const empiricalFreq = empiricalCount / s.total;
+            
+            // Если расхождение > 50% и категория достаточно частая (>1%)
+            if (expectedFreq > 0.01 && empiricalCount > 0) {
+                const diff = Math.abs(empiricalFreq - expectedFreq) / expectedFreq;
+                if (diff > 0.5) {
+                    warnings.push({
+                        game: game.name,
+                        category: catKey,
+                        expected: (expectedFreq * 100).toFixed(2) + '%',
+                        actual: (empiricalFreq * 100).toFixed(2) + '%',
+                        diff: (diff * 100).toFixed(0) + '%',
+                        draws: s.total
+                    });
+                }
+            }
+        });
+    });
+    
+    return warnings;
+}
+
 function updateSummaryTable() {
     const tbody = document.getElementById('summaryTable');
     if (!tbody) return;
@@ -1209,6 +1303,29 @@ function updateSummaryTable() {
     
     tbody.innerHTML = html;
     updateAnalysis();
+    renderWarnings();
+}
+
+function renderWarnings() {
+    const section = document.getElementById('warningsSection');
+    const box = document.getElementById('warningsBox');
+    if (!section || !box) return;
+
+    const warnings = checkEmpiricalVsTheory();
+    if (warnings.length === 0) {
+        section.style.display = 'none';
+        return;
+    }
+
+    section.style.display = '';
+    let html = '<div class="analysis-item" style="margin-bottom:8px;font-weight:600;color:#ffcc00;">⚠ Расхождение эмпирических и теоретических данных обнаружено (>{50}%):</div>';
+    warnings.forEach(w => {
+        html += `<div class="analysis-item" style="margin-bottom:4px;">
+            <span class="label"><b>${w.game}</b>, категория «${w.category}»:</span>
+            <span class="value">ожидалось ${w.expected}, получено ${w.actual} (расхождение ${w.diff}) за ${w.draws} тиражей</span>
+        </div>`;
+    });
+    box.innerHTML = html;
 }
 
 function updateAnalysis() {
@@ -1400,6 +1517,9 @@ function buildGameCards() {
 // ==================== EVENT LISTENERS ====================
 if (typeof document !== 'undefined') {
     document.addEventListener('DOMContentLoaded', () => {
+        // Проверяем теоретические данные при старте
+        validateTheory();
+        
         buildGameCards();
         updateSummaryTable();
         
