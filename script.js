@@ -1574,8 +1574,182 @@ if (typeof document !== 'undefined') {
             };
             info.textContent = desc[src];
         });
+
+        document.getElementById('loadRealBtn').addEventListener('click', function() {
+            RealDrawsComparison.render();
+        });
     });
 }
+
+// ==================== REAL DRAWS COMPARISON ====================
+const RealDrawsComparison = {
+    fileMap: {
+        '6x45': 'real-draws-6x45.json',
+        '5x36': 'real-draws-5x36.json',
+        '7x49': 'real-draws-7x49.json',
+        '4x20': 'real-draws-4x20.json',
+        'oxota': 'real-draws-okhota.json',
+        'rapido': 'real-draws-rapido.json'
+    },
+
+    extractNumbers(gameKey, draw) {
+        switch (gameKey) {
+            case '6x45':
+            case '5x36':
+            case '7x49':
+            case 'rapido':
+                return draw.numbers;
+            case '4x20':
+            case 'oxota':
+                return draw.field1.concat(draw.field2);
+            default:
+                return [];
+        }
+    },
+
+    computeRealFrequency(draws, gameKey) {
+        var freq = {};
+        draws.forEach(function(draw) {
+            var nums = RealDrawsComparison.extractNumbers(gameKey, draw);
+            nums.forEach(function(n) {
+                freq[n] = (freq[n] || 0) + 1;
+            });
+        });
+        return freq;
+    },
+
+    getMaxNumber(gameKey) {
+        var game = gameDefinitions[gameKey];
+        if (game.fields) {
+            var max = 0;
+            game.fields.forEach(function(f) { if (f.max > max) max = f.max; });
+            return max;
+        }
+        return 0;
+    },
+
+    renderGameComparison(gameKey, realFreq, realDrawsCount) {
+        var game = gameDefinitions[gameKey];
+        var simFreq = state.frequency[gameKey] || {};
+        var simTotal = (state.stats[gameKey] && state.stats[gameKey].total) ? state.stats[gameKey].total : 0;
+
+        var allNumbers = new Set();
+        Object.keys(realFreq).forEach(function(n) { allNumbers.add(parseInt(n)); });
+        Object.keys(simFreq).forEach(function(n) { allNumbers.add(parseInt(n)); });
+
+        if (allNumbers.size === 0) return '';
+
+        var sortedNums = Array.from(allNumbers).sort(function(a, b) { return a - b; });
+
+        var maxRealCount = 0;
+        var maxSimCount = 0;
+        sortedNums.forEach(function(n) {
+            if ((realFreq[n] || 0) > maxRealCount) maxRealCount = realFreq[n];
+            if ((simFreq[n] || 0) > maxSimCount) maxSimCount = simFreq[n];
+        });
+
+        var html = '<div class="rc-game-block">';
+        html += '<div class="rc-game-header">' + game.name + '</div>';
+        html += '<div class="rc-game-meta">Реальных тиражей: ' + realDrawsCount;
+        if (simTotal > 0) {
+            html += ' | Симуляций: ' + simTotal;
+        }
+        html += '</div>';
+
+        html += '<table class="rc-table">';
+        html += '<thead><tr>';
+        html += '<th>Число</th><th>Реал</th><th>%</th>';
+        if (simTotal > 0) {
+            html += '<th>Сим</th><th>%</th><th class="rc-bar-col">Сравнение</th>';
+        }
+        html += '</tr></thead>';
+        html += '<tbody>';
+
+        sortedNums.forEach(function(n, idx) {
+            var realCount = realFreq[n] || 0;
+            var realPct = realDrawsCount > 0 ? (realCount / realDrawsCount * 100).toFixed(1) : '0.0';
+            var simCount = simFreq[n] || 0;
+            var simPct = simTotal > 0 ? (simCount / simTotal * 100).toFixed(1) : '0.0';
+
+            html += '<tr class="' + (idx % 2 === 0 ? 'rc-even' : 'rc-odd') + '">';
+            html += '<td class="rc-num">' + n + '</td>';
+            html += '<td>' + realCount + '</td>';
+            html += '<td>' + realPct + '%</td>';
+
+            if (simTotal > 0) {
+                html += '<td>' + simCount + '</td>';
+                html += '<td>' + simPct + '%</td>';
+                html += '<td class="rc-bar-cell">';
+                var realBarW = maxRealCount > 0 ? (realCount / maxRealCount * 100) : 0;
+                var simBarW = maxSimCount > 0 ? (simCount / maxSimCount * 100) : 0;
+                html += '<div class="rc-bar-container">';
+                html += '<div class="rc-bar rc-bar-real" style="width:' + realBarW + '%"></div>';
+                html += '<div class="rc-bar rc-bar-sim" style="width:' + simBarW + '%"></div>';
+                html += '</div>';
+                html += '</td>';
+            }
+
+            html += '</tr>';
+        });
+
+        html += '</tbody></table>';
+        html += '</div>';
+        return html;
+    },
+
+    async render() {
+        var box = document.getElementById('realComparisonBox');
+        if (!box) return;
+
+        box.innerHTML = '<div class="rc-loading">Загрузка данных...</div>';
+
+        var self = this;
+        var gameKeys = Object.keys(this.fileMap);
+        var results = {};
+        var errors = [];
+
+        var fetches = gameKeys.map(function(gameKey) {
+            return fetch(self.fileMap[gameKey])
+                .then(function(resp) {
+                    if (!resp.ok) throw new Error('HTTP ' + resp.status);
+                    return resp.json();
+                })
+                .then(function(data) {
+                    results[gameKey] = data;
+                })
+                .catch(function(e) {
+                    errors.push(gameDefinitions[gameKey].name + ': ' + e.message);
+                });
+        });
+
+        await Promise.all(fetches);
+
+        var html = '';
+
+        if (errors.length > 0) {
+            html += '<div class="rc-errors">Не удалось загрузить: ' + errors.join(', ') + '</div>';
+        }
+
+        var gamesWithData = gameKeys.filter(function(k) { return results[k]; });
+
+        if (gamesWithData.length === 0) {
+            html += '<div class="rc-empty">Данные не загружены</div>';
+        } else {
+            gamesWithData.forEach(function(gameKey) {
+                var data = results[gameKey];
+                var realFreq = self.computeRealFrequency(data.draws, gameKey);
+                html += self.renderGameComparison(gameKey, realFreq, data.draws.length);
+            });
+        }
+
+        var gamesWithout = gameKeys.filter(function(k) { return !results[k]; });
+        if (gamesWithout.length > 0) {
+            html += '<div class="rc-no-data">Нет данных для: ' + gamesWithout.map(function(k) { return gameDefinitions[k].name; }).join(', ') + '</div>';
+        }
+
+        box.innerHTML = html;
+    }
+};
 
 // Экспорт для Node.js
 if (typeof module !== 'undefined' && module.exports) {

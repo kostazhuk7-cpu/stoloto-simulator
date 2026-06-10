@@ -498,3 +498,136 @@ footer {
         flex-direction: column;
     }
 }
+
+/* Real Draws Comparison */
+.real-comparison-box {
+    max-height: 500px;
+    overflow-y: auto;
+    margin-top: 8px;
+}
+
+.rc-loading {
+    text-align: center;
+    padding: 12px;
+    color: #a0a0a0;
+    font-size: 0.8em;
+}
+
+.rc-errors {
+    background: rgba(233, 69, 96, 0.15);
+    border: 1px solid #e94560;
+    border-radius: 4px;
+    padding: 6px 8px;
+    font-size: 0.75em;
+    color: #e94560;
+    margin-bottom: 8px;
+}
+
+.rc-empty {
+    text-align: center;
+    padding: 12px;
+    color: #a0a0a0;
+    font-size: 0.8em;
+}
+
+.rc-no-data {
+    font-size: 0.7em;
+    color: #666;
+    margin-top: 8px;
+    font-style: italic;
+}
+
+.rc-game-block {
+    background: #0f3460;
+    border-radius: 6px;
+    padding: 8px;
+    margin-bottom: 8px;
+    border: 1px solid #2a2a4a;
+}
+
+.rc-game-header {
+    color: #f0a500;
+    font-weight: bold;
+    font-size: 0.85em;
+    margin-bottom: 3px;
+}
+
+.rc-game-meta {
+    font-size: 0.7em;
+    color: #a0a0a0;
+    margin-bottom: 6px;
+}
+
+.rc-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.7em;
+}
+
+.rc-table th {
+    background: #16213e;
+    color: #f0a500;
+    padding: 3px 4px;
+    text-align: center;
+    border-bottom: 1px solid #2a2a4a;
+    font-size: 0.9em;
+}
+
+.rc-table td {
+    padding: 2px 4px;
+    text-align: center;
+    border-bottom: 1px solid #1a1a2a;
+}
+
+.rc-even {
+    background: rgba(15, 52, 96, 0.3);
+}
+
+.rc-odd {
+    background: transparent;
+}
+
+.rc-table tr:hover {
+    background: rgba(233, 69, 96, 0.1);
+}
+
+.rc-num {
+    font-weight: bold;
+    color: #e0e0e0;
+}
+
+.rc-bar-col {
+    min-width: 80px;
+}
+
+.rc-bar-cell {
+    padding: 3px 4px;
+}
+
+.rc-bar-container {
+    position: relative;
+    height: 10px;
+    background: #0a0a1a;
+    border-radius: 2px;
+    overflow: hidden;
+}
+
+.rc-bar {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 5px;
+    border-radius: 1px;
+    transition: width 0.3s;
+}
+
+.rc-bar-real {
+    background: #4a9eff;
+    z-index: 2;
+}
+
+.rc-bar-sim {
+    background: #f0a500;
+    top: 5px;
+    z-index: 1;
+}
