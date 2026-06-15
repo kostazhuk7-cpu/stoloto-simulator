@@ -1466,7 +1466,29 @@ function updateGameUI(gameKey, winning, player, result) {
         <div>Выигрышей: ${s.wins}</div>
         <div>ROI: <span class="${roi >= 0 ? 'pos' : 'neg'}">${roi}%</span></div>
         <div>Баланс: ${s.won - s.spent}₽</div>
+        ${renderGenFreqMini(gameKey)}
     `;
+}
+
+function renderGenFreqMini(gameKey) {
+    const gf = state.generatorFreq[gameKey];
+    if (!gf || !Object.keys(gf).length) return '';
+    const game = gameDefinitions[gameKey];
+    if (!game.fields || game.type === 'bingo') return '';
+    
+    let html = '<div class="genfreq-mini">';
+    game.fields.forEach((f, i) => {
+        const fieldFreq = gf[i] || {};
+        const top = Object.entries(fieldFreq)
+            .sort((a, b) => b[1] - a[1])
+            .slice(0, 3);
+        if (!top.length) return;
+        const label = game.fields.length > 1 ? 'П' + (i+1) + ': ' : 'Ген: ';
+        const nums = top.map(([n, c]) => `<span class="gf-num">${n}</span><small>(${c})</small>`).join(' ');
+        html += `<div class="gf-line">${label}${nums}</div>`;
+    });
+    html += '</div>';
+    return html;
 }
 
 function checkEmpiricalVsTheory() {

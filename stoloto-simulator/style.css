@@ -678,3 +678,25 @@ footer {
     margin-top: 4px;
     font-style: italic;
 }
+
+/* Generator frequency mini display */
+.genfreq-mini {
+    margin-top: 4px;
+    padding-top: 3px;
+    border-top: 1px solid #2a2a4a;
+    font-size: 0.68em;
+}
+.gf-line {
+    color: #b0b0b0;
+    line-height: 1.4;
+}
+.gf-num {
+    color: #4a9eff;
+    font-weight: bold;
+    margin: 0 1px;
+}
+.gf-line small {
+    color: #777;
+    font-size: 0.85em;
+    margin-left: 1px;
+}
