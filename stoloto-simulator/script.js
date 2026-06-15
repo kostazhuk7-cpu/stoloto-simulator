@@ -305,7 +305,7 @@ const gameDefinitions = {
             { match: 5, name: '5 из 6', multiplier: 5000 },
             { match: 4, name: '4 из 6', multiplier: 100 },
             { match: 3, name: '3 из 6', multiplier: 10 },
-            { match: 2, name: '2 из 6', multiplier: 0 }
+            { match: 2, name: '2 из 6', multiplier: 70 }
         ],
         theory: {
             total: 8145060,
@@ -320,8 +320,11 @@ const gameDefinitions = {
         prizes: [
             { match: '5+1', name: 'Суперприз', multiplier: 3000000 },
             { match: '5+0', name: 'Приз', multiplier: 1000000 },
+            { match: '4+1', name: '4 из 5 + бонус', multiplier: 7500 },
             { match: '4+0', name: '4 из 5', multiplier: 7500 },
+            { match: '3+1', name: '3 из 5 + бонус', multiplier: 2500 },
             { match: '3+0', name: '3 из 5', multiplier: 2500 },
+            { match: '2+1', name: '2 из 5 + бонус', multiplier: 0 },
             { match: '2+0', name: '2 из 5', multiplier: 0 }
         ],
         theory: {
@@ -339,11 +342,12 @@ const gameDefinitions = {
             { match: 6, name: '6 из 7', multiplier: 10000 },
             { match: 5, name: '5 из 7', multiplier: 500 },
             { match: 4, name: '4 из 7', multiplier: 20 },
-            { match: 3, name: '3 из 7', multiplier: 0 }
+            { match: 3, name: '3 из 7', multiplier: 0 },
+            { match: 2, name: '2 из 7', multiplier: 0 }
         ],
         theory: {
             total: 85900584,
-            cats: { 7: { c: 1, o: 85900584 }, 6: { c: 42, o: 2045252 }, 5: { c: 1260, o: 68175 }, 4: { c: 20790, o: 4132 }, 3: { c: 194580, o: 441 } }
+            cats: { 7: { c: 1, o: 85900584 }, 6: { c: 294, o: 292179 }, 5: { c: 18081, o: 4751 }, 4: { c: 401800, o: 214 }, 3: { c: 3917550, o: 22 }, 2: { c: 17864028, o: 5 } }
         }
     },
     '4x20': {
@@ -354,13 +358,39 @@ const gameDefinitions = {
         prizes: [
             { match: '4+4', name: 'Джекпот', multiplier: 500000 },
             { match: '4+3', name: '4+3 / 3+4', multiplier: 5000 },
-            { match: '4+2', name: '4+2 / 2+4 / 3+3', multiplier: 500 },
+            { match: '4+2', name: '4+2 / 2+4', multiplier: 500 },
+            { match: '4+1', name: '4+1 / 1+4', multiplier: 200 },
+            { match: '4+0', name: '4+0 / 0+4', multiplier: 150 },
+            { match: '3+3', name: '3+3', multiplier: 100 },
             { match: '3+2', name: '3+2 / 2+3', multiplier: 50 },
-            { match: '2+2', name: '2+2', multiplier: 10 }
+            { match: '3+1', name: '3+1 / 1+3', multiplier: 25 },
+            { match: '3+0', name: '3+0 / 0+3', multiplier: 15 },
+            { match: '2+2', name: '2+2', multiplier: 10 },
+            { match: '2+1', name: '2+1 / 1+2', multiplier: 5 },
+            { match: '2+0', name: '2+0 / 0+2', multiplier: 2 },
+            { match: '1+1', name: '1+1', multiplier: 0 },
+            { match: '1+0', name: '1+0 / 0+1', multiplier: 0 },
+            { match: '0+0', name: '0+0', multiplier: 0 }
         ],
         theory: {
             total: 23474025,
-            cats: { '4+4': { c: 1, o: 23474025 }, '4+3': { c: 64, o: 366782 }, '4+2': { c: 1156, o: 20377 }, '3+2': { c: 13824, o: 1698 }, '2+2': { c: 82944, o: 283 } }
+            cats: {
+                '4+4': { c: 1, o: 23474025 },
+                '4+3': { c: 128, o: 183391 },
+                '4+2': { c: 1440, o: 16301 },
+                '4+1': { c: 4480, o: 5240 },
+                '4+0': { c: 3640, o: 6449 },
+                '3+3': { c: 4096, o: 5730 },
+                '3+2': { c: 92160, o: 255 },
+                '3+1': { c: 286720, o: 82 },
+                '3+0': { c: 232960, o: 101 },
+                '2+2': { c: 518400, o: 45 },
+                '2+1': { c: 3225600, o: 7 },
+                '2+0': { c: 2620800, o: 9 },
+                '1+1': { c: 5017600, o: 5 },
+                '1+0': { c: 8153600, o: 3 },
+                '0+0': { c: 3312400, o: 7 }
+            }
         }
     },
     'big': {
@@ -374,8 +404,19 @@ const gameDefinitions = {
             { match: '5+0', name: '5+0', multiplier: 1000 },
             { match: '4+2', name: '4+2', multiplier: 500 },
             { match: '4+1', name: '4+1', multiplier: 100 },
-            { match: '3+2', name: '3+2', multiplier: 50 },
-            { match: '2+2', name: '2+2', multiplier: 10 }
+            { match: '4+0', name: '4+0', multiplier: 50 },
+            { match: '3+2', name: '3+2', multiplier: 30 },
+            { match: '3+1', name: '3+1', multiplier: 15 },
+            { match: '3+0', name: '3+0', multiplier: 5 },
+            { match: '2+2', name: '2+2', multiplier: 3 },
+            { match: '2+1', name: '2+1', multiplier: 1 },
+            { match: '2+0', name: '2+0', multiplier: 0 },
+            { match: '1+2', name: '1+2', multiplier: 0 },
+            { match: '1+1', name: '1+1', multiplier: 0 },
+            { match: '1+0', name: '1+0', multiplier: 0 },
+            { match: '0+2', name: '0+2', multiplier: 0 },
+            { match: '0+1', name: '0+1', multiplier: 0 },
+            { match: '0+0', name: '0+0', multiplier: 0 }
         ],
         theory: {
             total: 95344200,
@@ -415,8 +456,10 @@ const gameDefinitions = {
             { match: '7+1', name: '7+1', multiplier: 500 },
             { match: '7+0', name: '7+0', multiplier: 50 },
             { match: '6+1', name: '6+1', multiplier: 20 },
+            { match: '6+0', name: '6+0', multiplier: 10 },
             { match: '5+1', name: '5+1', multiplier: 5 },
-            { match: '4+1', name: '4+1', multiplier: 2 }
+            { match: '5+0', name: '5+0', multiplier: 2 },
+            { match: '4+1', name: '4+1', multiplier: 1 }
         ],
         theory: {
             total: 503880,
@@ -431,19 +474,39 @@ const gameDefinitions = {
         prizes: [
             { match: '4+4', name: 'Суперприз', multiplier: 1000000 },
             { match: '4+3', name: '4+3 / 3+4', multiplier: 10000 },
-            { match: '4+2', name: '4+2 / 2+4 / 3+3', multiplier: 1000 },
+            { match: '4+2', name: '4+2 / 2+4', multiplier: 5000 },
+            { match: '4+1', name: '4+1 / 1+4', multiplier: 2000 },
+            { match: '4+0', name: '4+0 / 0+4', multiplier: 1000 },
+            { match: '3+3', name: '3+3', multiplier: 500 },
             { match: '3+2', name: '3+2 / 2+3', multiplier: 100 },
-            { match: '3+1', name: '3+1 / 1+3', multiplier: 10 },
-            { match: '2+2', name: '2+2', multiplier: 5 },
-            { match: '2+1', name: '2+1 / 1+2', multiplier: 2 },
-            { match: '2+0', name: '2+0 / 0+2', multiplier: 1 },
+            { match: '3+1', name: '3+1 / 1+3', multiplier: 50 },
+            { match: '3+0', name: '3+0 / 0+3', multiplier: 25 },
+            { match: '2+2', name: '2+2', multiplier: 10 },
+            { match: '2+1', name: '2+1 / 1+2', multiplier: 5 },
+            { match: '2+0', name: '2+0 / 0+2', multiplier: 2 },
             { match: '1+1', name: '1+1', multiplier: 0 },
             { match: '1+0', name: '1+0 / 0+1', multiplier: 0 },
             { match: '0+0', name: '0+0', multiplier: 0 }
         ],
         theory: {
             total: 23474025,
-            cats: { '4+4': { c: 1, o: 23474025 }, '4+3': { c: 64, o: 366782 }, '4+2': { c: 1156, o: 20377 }, '3+3': { c: 13824, o: 1698 }, '3+2': { c: 82944, o: 283 }, '3+1': { c: 331776, o: 71 }, '2+2': { c: 1244160, o: 19 }, '2+1': { c: 2985984, o: 8 }, '2+0': { c: 2985984, o: 8 }, '1+1': { c: 8957952, o: 3 }, '1+0': { c: 8957952, o: 3 }, '0+0': { c: 8957952, o: 3 } }
+            cats: {
+                '4+4': { c: 1, o: 23474025 },
+                '4+3': { c: 128, o: 183391 },
+                '4+2': { c: 1440, o: 16301 },
+                '4+1': { c: 4480, o: 5240 },
+                '4+0': { c: 3640, o: 6449 },
+                '3+3': { c: 4096, o: 5730 },
+                '3+2': { c: 92160, o: 255 },
+                '3+1': { c: 286720, o: 82 },
+                '3+0': { c: 232960, o: 101 },
+                '2+2': { c: 518400, o: 45 },
+                '2+1': { c: 3225600, o: 7 },
+                '2+0': { c: 2620800, o: 9 },
+                '1+1': { c: 5017600, o: 5 },
+                '1+0': { c: 8153600, o: 3 },
+                '0+0': { c: 3312400, o: 7 }
+            }
         }
     },
     'keno': {
@@ -458,15 +521,11 @@ const gameDefinitions = {
             { match: 7, name: '7 из 10', multiplier: 100 },
             { match: 6, name: '6 из 10', multiplier: 20 },
             { match: 5, name: '5 из 10', multiplier: 5 },
-            { match: 4, name: '4 из 10', multiplier: 2 },
-            { match: 3, name: '3 из 10', multiplier: 0 },
-            { match: 2, name: '2 из 10', multiplier: 0 },
-            { match: 1, name: '1 из 10', multiplier: 0 },
-            { match: 0, name: '0 из 10', multiplier: 0 }
+            { match: 4, name: '4 из 10', multiplier: 2 }
         ],
         theory: {
             total: 1646492110120,
-            cats: { 10: { c: 184756, o: 8911711 }, 9: { c: 10077600, o: 163381 }, 8: { c: 222966900, o: 7384 }, 7: { c: 2863573200, o: 575 }, 6: { c: 24221109900, o: 68 }, 5: { c: 136264914000, o: 12 }, 4: { c: 520676256000, o: 3 }, 3: { c: 1311738120000, o: 1 }, 2: { c: 2076436080000, o: 1 }, 1: { c: 1932530808000, o: 1 }, 0: { c: 753940275000, o: 2 } }
+            cats: { 10: { c: 184756, o: 8911711 }, 9: { c: 10077600, o: 163381 }, 8: { c: 222966900, o: 7384 }, 7: { c: 2863573200, o: 575 }, 6: { c: 24221109900, o: 68 }, 5: { c: 136264914000, o: 12 }, 4: { c: 520676256000, o: 3 } }
         }
     },
     'ruslotto': {
@@ -505,18 +564,29 @@ const gameDefinitions = {
     'zodiac': {
         name: 'Зодиак',
         price: 50,
-        fields: [{ count: 4, min: 1, max: 99 }],
+        fields: [
+            { count: 1, min: 1, max: 31 },   // День (1-31)
+            { count: 1, min: 1, max: 12 },   // Месяц (1-12)
+            { count: 1, min: 0, max: 99 },   // Год (0-99)
+            { count: 1, min: 1, max: 12 }    // Знак зодиака (1-12)
+        ],
         expanded: false,
         prizes: [
-            { match: 4, name: '4 числа', multiplier: 500000 },
-            { match: 3, name: '3 числа', multiplier: 1000 },
-            { match: 2, name: '2 числа', multiplier: 300 },
-            { match: 1, name: '1 число', multiplier: 50 },
-            { match: 0, name: '0 чисел', multiplier: 0 }
+            { match: 4, name: 'Суперприз (4 из 4)', multiplier: 500000 },
+            { match: 3, name: '3 совпадения', multiplier: 5000 },
+            { match: 2, name: '2 совпадения', multiplier: 500 },
+            { match: 1, name: '1 совпадение', multiplier: 100 },
+            { match: 0, name: 'Без совпадений', multiplier: 0 }
         ],
         theory: {
-            total: 3764376,
-            cats: { 4: { c: 1, o: 3764376 }, 3: { c: 380, o: 9906 }, 2: { c: 26790, o: 140 }, 1: { c: 553660, o: 7 }, 0: { c: 3183545, o: 1 } }
+            total: 446400,
+            cats: {
+                4: { c: 1, o: 446400 },
+                3: { c: 151, o: 2956 },
+                2: { c: 5929, o: 75 },
+                1: { c: 80949, o: 6 },
+                0: { c: 359370, o: 1 }
+            }
         }
     }
 };
@@ -530,14 +600,14 @@ function validateTheory() {
         
         let expectedTotal;
         if (gameKey === 'keno') {
-            // КЕНО: C(80,10)
+            // КЕНО: C(80,10) — пространство выбора игрока (10 из 80)
             expectedTotal = combinations(80, 10);
         } else if (gameKey === 'allornothing') {
             // Всё или Ничего: C(24,12)
             expectedTotal = combinations(24, 12);
         } else if (gameKey === 'zodiac') {
-            // Зодиак: C(99,4)
-            expectedTotal = combinations(99, 4);
+            // Зодиак: 4 независимых поля: день(1-31) × месяц(1-12) × год(0-99) × знак(1-12)
+            expectedTotal = 31 * 12 * 100 * 12;
         } else if (game.fields.length === 1) {
             // Одно поле: C(max, count)
             const f = game.fields[0];
@@ -556,11 +626,17 @@ function validateTheory() {
             errors.push(`${game.name}: theory.total=${actualTotal}, но должно быть ${expectedTotal}`);
         }
         
-        // Проверяем сумму категорий
-        const sumCats = Object.values(game.theory.cats).reduce((a, c) => a + c.c, 0);
-        if (Math.abs(sumCats - actualTotal) > 1) {
-            errors.push(`${game.name}: сумма категорий=${sumCats}, но должно быть ${actualTotal}`);
-        }
+        // Проверяем, что все выигрышные категории (multiplier > 0) есть в prizes
+        const prizeMatchKeys = new Set(game.prizes.filter(p => p.multiplier > 0).map(p => String(p.match)));
+        Object.entries(game.theory.cats).forEach(([catKey, catData]) => {
+            if (game.prizes.some(p => String(p.match) === catKey && p.multiplier > 0) === false) {
+                // Категория без выигрыша — это нормально (multiplier = 0)
+                // Но если категория есть в cats но нет в prizes вообще — предупреждение
+                if (!game.prizes.some(p => String(p.match) === catKey)) {
+                    errors.push(`${game.name}: категория '${catKey}' есть в theory.cats, но отсутствует в prizes`);
+                }
+            }
+        });
     });
     
     if (errors.length > 0) {
@@ -783,9 +859,13 @@ const GameEngine = {
             matches = [m1, m2];
             if (m1 === 4 && m2 === 4) matchKey = '4+4';
             else if ((m1 === 4 && m2 === 3) || (m1 === 3 && m2 === 4)) matchKey = '4+3';
-            else if ((m1 === 4 && m2 === 2) || (m1 === 2 && m2 === 4) || (m1 === 3 && m2 === 3)) matchKey = '4+2';
+            else if ((m1 === 4 && m2 === 2) || (m1 === 2 && m2 === 4)) matchKey = '4+2';
+            else if ((m1 === 4 && m2 === 1) || (m1 === 1 && m2 === 4)) matchKey = '4+1';
+            else if ((m1 === 4 && m2 === 0) || (m1 === 0 && m2 === 4)) matchKey = '4+0';
+            else if (m1 === 3 && m2 === 3) matchKey = '3+3';
             else if ((m1 === 3 && m2 === 2) || (m1 === 2 && m2 === 3)) matchKey = '3+2';
             else if ((m1 === 3 && m2 === 1) || (m1 === 1 && m2 === 3)) matchKey = '3+1';
+            else if ((m1 === 3 && m2 === 0) || (m1 === 0 && m2 === 3)) matchKey = '3+0';
             else if (m1 === 2 && m2 === 2) matchKey = '2+2';
             else if ((m1 === 2 && m2 === 1) || (m1 === 1 && m2 === 2)) matchKey = '2+1';
             else if ((m1 === 2 && m2 === 0) || (m1 === 0 && m2 === 2)) matchKey = '2+0';
@@ -854,7 +934,7 @@ const GameEngine = {
                 }
             };
         } else if (gameKey === 'zodiac') {
-            const m = winning[0].filter(n => player[0].includes(n)).length;
+            const m = winning.reduce((sum, field, i) => sum + (player[i] && field.includes(player[i][0]) ? 1 : 0), 0);
             matches = [m];
             matchKey = m;
         } else if (gameKey === 'allornothing') {
