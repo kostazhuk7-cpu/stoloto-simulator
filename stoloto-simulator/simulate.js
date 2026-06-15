@@ -66,7 +66,7 @@ function simulateGame(gameKey, count = 1000) {
 
 // Запускаем симуляции для всех игр
 async function runAllSimulations() {
-    const games = ['6x45', '5x36', '4x20', 'allornothing', 'rapido', 'keno', 'ruslotto', 'gzhl', 'zodiac'];
+    const games = ['6x45', '5x36', '7x49', '4x20', 'big', 'rapido', 'oxota', 'keno', 'zabava', 'duel'];
     
     for (const gameKey of games) {
         simulateGame(gameKey, 1000);
