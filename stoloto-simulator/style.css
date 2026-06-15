@@ -631,3 +631,50 @@ footer {
     top: 5px;
     z-index: 1;
 }
+
+/* Compact hot numbers display */
+.rc-prediction {
+    background: #1a1a3e;
+    border: 1px solid #4a9eff;
+    border-radius: 4px;
+    padding: 6px 8px;
+    margin: 6px 0;
+    font-size: 0.8em;
+}
+.rc-pick-nums {
+    color: #4aff4a;
+    font-weight: bold;
+    font-size: 1.1em;
+    letter-spacing: 1px;
+}
+.rc-label {
+    color: #a0a0a0;
+    font-size: 0.85em;
+}
+.rc-hot-numbers {
+    margin: 4px 0;
+    font-size: 0.8em;
+    line-height: 1.6;
+}
+.rc-hot-ball {
+    display: inline-block;
+    background: #0f3460;
+    border: 1px solid #f0a500;
+    border-radius: 3px;
+    padding: 1px 5px;
+    margin: 1px 2px;
+    color: #f0a500;
+    font-weight: bold;
+    font-size: 0.9em;
+}
+.rc-hot-ball small {
+    color: #888;
+    font-weight: normal;
+    font-size: 0.8em;
+}
+.rc-meta {
+    color: #666;
+    font-size: 0.7em;
+    margin-top: 4px;
+    font-style: italic;
+}

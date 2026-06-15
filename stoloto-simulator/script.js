@@ -1892,66 +1892,49 @@ const RealDrawsComparison = {
         var simFreq = state.frequency[gameKey] || {};
         var simTotal = (state.stats[gameKey] && state.stats[gameKey].total) ? state.stats[gameKey].total : 0;
 
-        var allNumbers = new Set();
-        Object.keys(realFreq).forEach(function(n) { allNumbers.add(parseInt(n)); });
-        Object.keys(simFreq).forEach(function(n) { allNumbers.add(parseInt(n)); });
+        // Get top hot numbers from real draws
+        var realSorted = Object.entries(realFreq)
+            .sort(function(a, b) { return b[1] - a[1]; });
+        
+        if (realSorted.length === 0) return '';
 
-        if (allNumbers.size === 0) return '';
+        var topCount = game.fields ? Math.max.apply(null, game.fields.map(function(f) { return f.count; })) : 6;
+        var hotNums = realSorted.slice(0, topCount + 4);
 
-        var sortedNums = Array.from(allNumbers).sort(function(a, b) { return a - b; });
-
-        var maxRealCount = 0;
-        var maxSimCount = 0;
-        sortedNums.forEach(function(n) {
-            if ((realFreq[n] || 0) > maxRealCount) maxRealCount = realFreq[n];
-            if ((simFreq[n] || 0) > maxSimCount) maxSimCount = simFreq[n];
+        // Build prediction: pick the top N most frequent numbers
+        var picks = [];
+        game.fields.forEach(function(f, i) {
+            var fieldPicks = realSorted
+                .filter(function(e) { return parseInt(e[0]) >= f.min && parseInt(e[0]) <= f.max; })
+                .slice(0, f.count)
+                .map(function(e) { return parseInt(e[0]); })
+                .sort(function(a, b) { return a - b; });
+            picks.push(fieldPicks);
         });
 
         var html = '<div class="rc-game-block">';
-        html += '<div class="rc-game-header">' + game.name + '</div>';
-        html += '<div class="rc-game-meta">Реальных тиражей: ' + realDrawsCount;
-        if (simTotal > 0) {
-            html += ' | Симуляций: ' + simTotal;
-        }
+        html += '<div class="rc-game-header">' + game.name + ' <span style="font-size:0.7em;font-weight:400">(' + realDrawsCount + ' реальных тиражей)</span></div>';
+        
+        // Prediction line
+        var pickStr = picks.map(function(p, i) { 
+            return (game.fields.length > 1 ? 'Поле' + (i+1) + ': ' : '') + p.join(', '); 
+        }).join(' | ');
+        html += '<div class="rc-prediction">';
+        html += '<span class="rc-label">Прогноз чисел:</span> ';
+        html += '<span class="rc-pick-nums">' + pickStr + '</span>';
         html += '</div>';
 
-        html += '<table class="rc-table">';
-        html += '<thead><tr>';
-        html += '<th>Число</th><th>Реал</th><th>%</th>';
-        if (simTotal > 0) {
-            html += '<th>Сим</th><th>%</th><th class="rc-bar-col">Сравнение</th>';
-        }
-        html += '</tr></thead>';
-        html += '<tbody>';
-
-        sortedNums.forEach(function(n, idx) {
-            var realCount = realFreq[n] || 0;
-            var realPct = realDrawsCount > 0 ? (realCount / realDrawsCount * 100).toFixed(1) : '0.0';
-            var simCount = simFreq[n] || 0;
-            var simPct = simTotal > 0 ? (simCount / simTotal * 100).toFixed(1) : '0.0';
-
-            html += '<tr class="' + (idx % 2 === 0 ? 'rc-even' : 'rc-odd') + '">';
-            html += '<td class="rc-num">' + n + '</td>';
-            html += '<td>' + realCount + '</td>';
-            html += '<td>' + realPct + '%</td>';
-
-            if (simTotal > 0) {
-                html += '<td>' + simCount + '</td>';
-                html += '<td>' + simPct + '%</td>';
-                html += '<td class="rc-bar-cell">';
-                var realBarW = maxRealCount > 0 ? (realCount / maxRealCount * 100) : 0;
-                var simBarW = maxSimCount > 0 ? (simCount / maxSimCount * 100) : 0;
-                html += '<div class="rc-bar-container">';
-                html += '<div class="rc-bar rc-bar-real" style="width:' + realBarW + '%"></div>';
-                html += '<div class="rc-bar rc-bar-sim" style="width:' + simBarW + '%"></div>';
-                html += '</div>';
-                html += '</td>';
-            }
-
-            html += '</tr>';
+        // Hot numbers
+        html += '<div class="rc-hot-numbers">';
+        html += '<span class="rc-label">Частые:</span> ';
+        hotNums.forEach(function(e, i) {
+            html += '<span class="rc-hot-ball">' + e[0] + ' <small>(' + e[1] + 'x)</small></span> ';
         });
+        html += '</div>';
 
-        html += '</tbody></table>';
+        if (simTotal > 0) {
+            html += '<div class="rc-meta">Выборка: ' + realDrawsCount + ' реал / ' + simTotal + ' сим. Запусти симуляцию чтобы сравнить частоты.</div>';
+        }
         html += '</div>';
         return html;
     },
