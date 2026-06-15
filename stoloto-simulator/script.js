@@ -1337,29 +1337,7 @@ async function runParallelDraw(gameKeys) {
             s.losses++;
         }
 
-        // Update frequency
-        if (gameDefinitions[gameKey].type === 'bingo') {
-            const moves = winning[0];
-            moves.forEach(n => {
-                if (!state.frequency[gameKey]) state.frequency[gameKey] = {};
-                state.frequency[gameKey][n] = (state.frequency[gameKey][n] || 0) + 1;
-            });
-        } else {
-            winning.forEach((field, fi) => {
-                field.forEach(n => {
-                    if (!state.frequency[gameKey]) state.frequency[gameKey] = {};
-                    state.frequency[gameKey][n] = (state.frequency[gameKey][n] || 0) + 1;
-                });
-                // Per-field generator frequency tracking (for genhot strategy)
-                if (!state.generatorFreq[gameKey]) state.generatorFreq[gameKey] = {};
-                if (!state.generatorFreq[gameKey][fi]) state.generatorFreq[gameKey][fi] = {};
-                field.forEach(n => {
-                    state.generatorFreq[gameKey][fi][n] = (state.generatorFreq[gameKey][fi][n] || 0) + 1;
-                });
-            });
-        }
-
-        // Run genhot strategy on same winning numbers (parallel, separate stats)
+        // Run genhot BEFORE updating frequency (no look-ahead bias)
         if (gameDefinitions[gameKey].type !== 'bingo') {
             if (!state.statsGen[gameKey]) {
                 state.statsGen[gameKey] = { total: 0, wins: 0, losses: 0, categories: {}, spent: 0, won: 0 };
@@ -1376,6 +1354,27 @@ async function runParallelDraw(gameKeys) {
             } else {
                 sg.losses++;
             }
+        }
+
+        // Update frequency (добавляет текущий тираж в логи — ПОСЛЕ genhot)
+        if (gameDefinitions[gameKey].type === 'bingo') {
+            const moves = winning[0];
+            moves.forEach(n => {
+                if (!state.frequency[gameKey]) state.frequency[gameKey] = {};
+                state.frequency[gameKey][n] = (state.frequency[gameKey][n] || 0) + 1;
+            });
+        } else {
+            winning.forEach((field, fi) => {
+                field.forEach(n => {
+                    if (!state.frequency[gameKey]) state.frequency[gameKey] = {};
+                    state.frequency[gameKey][n] = (state.frequency[gameKey][n] || 0) + 1;
+                });
+                if (!state.generatorFreq[gameKey]) state.generatorFreq[gameKey] = {};
+                if (!state.generatorFreq[gameKey][fi]) state.generatorFreq[gameKey][fi] = {};
+                field.forEach(n => {
+                    state.generatorFreq[gameKey][fi][n] = (state.generatorFreq[gameKey][fi][n] || 0) + 1;
+                });
+            });
         }
 
         state.history.push({ gameKey, winning, player, result, counts, timestamp: Date.now() });
