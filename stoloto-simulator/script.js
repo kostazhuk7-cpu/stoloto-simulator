@@ -423,28 +423,6 @@ const gameDefinitions = {
             cats: { '5+2': { c: 1, o: 95344200 }, '5+1': { c: 18, o: 5296900 }, '5+0': { c: 36, o: 2648450 }, '4+2': { c: 325, o: 293366 }, '4+1': { c: 5850, o: 16300 }, '3+2': { c: 7800, o: 12224 }, '2+2': { c: 29250, o: 3260 } }
         }
     },
-    'allornothing': {
-        name: 'Всё или Ничего',
-        price: 150,
-        fields: [{ count: 12, min: 1, max: 24 }],
-        expanded: null,
-        prizes: [
-            { match: 12, name: 'Суперприз (12)', multiplier: 1000000 },
-            { match: 0, name: 'Суперприз (0)', multiplier: 1000000 },
-            { match: 11, name: '11 или 1', multiplier: 5000 },
-            { match: 1, name: '11 или 1', multiplier: 5000 },
-            { match: 10, name: '10 или 2', multiplier: 200 },
-            { match: 2, name: '10 или 2', multiplier: 200 },
-            { match: 9, name: '9 или 3', multiplier: 20 },
-            { match: 3, name: '9 или 3', multiplier: 20 },
-            { match: 8, name: '8 или 4', multiplier: 5 },
-            { match: 4, name: '8 или 4', multiplier: 5 }
-        ],
-        theory: {
-            total: 2704156,
-            cats: { 12: { c: 1, o: 2704156 }, 0: { c: 1, o: 2704156 }, 11: { c: 144, o: 18779 }, 1: { c: 144, o: 18779 }, 10: { c: 4356, o: 621 }, 2: { c: 4356, o: 621 }, 9: { c: 48400, o: 56 }, 3: { c: 48400, o: 56 }, 8: { c: 245025, o: 11 }, 4: { c: 245025, o: 11 } }
-        }
-    },
     'rapido': {
         name: 'Рапидо',
         price: 30,
@@ -561,31 +539,222 @@ const gameDefinitions = {
             cats: { 'superprize': { c: 1, o: 1 }, '30all': { c: 1, o: 1 }, '15field': { c: 1, o: 1 }, '5row': { c: 1, o: 1 } }
         }
     },
-    'zodiac': {
-        name: 'Зодиак',
-        price: 50,
-        fields: [
-            { count: 1, min: 1, max: 31 },   // День (1-31)
-            { count: 1, min: 1, max: 12 },   // Месяц (1-12)
-            { count: 1, min: 0, max: 99 },   // Год (0-99)
-            { count: 1, min: 1, max: 12 }    // Знак зодиака (1-12)
-        ],
-        expanded: false,
+    '4x20mini': {
+        name: '4 из 20 Мини',
+        price: 80,
+        fields: [{ count: 4, min: 1, max: 20 }, { count: 4, min: 1, max: 20 }],
+        expanded: { min: 4, max: 10, perField: true },
         prizes: [
-            { match: 4, name: 'Суперприз (4 из 4)', multiplier: 500000 },
-            { match: 3, name: '3 совпадения', multiplier: 5000 },
-            { match: 2, name: '2 совпадения', multiplier: 500 },
-            { match: 1, name: '1 совпадение', multiplier: 100 },
-            { match: 0, name: 'Без совпадений', multiplier: 0 }
+            { match: '4+4', name: 'Джекпот', multiplier: 500000 },
+            { match: '4+3', name: '4+3 / 3+4', multiplier: 5000 },
+            { match: '4+2', name: '4+2 / 2+4', multiplier: 500 },
+            { match: '4+1', name: '4+1 / 1+4', multiplier: 200 },
+            { match: '4+0', name: '4+0 / 0+4', multiplier: 150 },
+            { match: '3+3', name: '3+3', multiplier: 100 },
+            { match: '3+2', name: '3+2 / 2+3', multiplier: 50 },
+            { match: '3+1', name: '3+1 / 1+3', multiplier: 25 },
+            { match: '3+0', name: '3+0 / 0+3', multiplier: 15 },
+            { match: '2+2', name: '2+2', multiplier: 10 },
+            { match: '2+1', name: '2+1 / 1+2', multiplier: 5 },
+            { match: '2+0', name: '2+0 / 0+2', multiplier: 2 },
+            { match: '1+1', name: '1+1', multiplier: 0 },
+            { match: '1+0', name: '1+0 / 0+1', multiplier: 0 },
+            { match: '0+0', name: '0+0', multiplier: 0 }
         ],
         theory: {
-            total: 446400,
+            total: 23474025,
             cats: {
-                4: { c: 1, o: 446400 },
-                3: { c: 151, o: 2956 },
-                2: { c: 5929, o: 75 },
-                1: { c: 80949, o: 6 },
-                0: { c: 359370, o: 1 }
+                '4+4': { c: 1, o: 23474025 },
+                '4+3': { c: 128, o: 183391 },
+                '4+2': { c: 1440, o: 16301 },
+                '4+1': { c: 4480, o: 5240 },
+                '4+0': { c: 3640, o: 6449 },
+                '3+3': { c: 4096, o: 5730 },
+                '3+2': { c: 92160, o: 255 },
+                '3+1': { c: 286720, o: 82 },
+                '3+0': { c: 232960, o: 101 },
+                '2+2': { c: 518400, o: 45 },
+                '2+1': { c: 3225600, o: 7 },
+                '2+0': { c: 2620800, o: 9 },
+                '1+1': { c: 5017600, o: 5 },
+                '1+0': { c: 8153600, o: 3 },
+                '0+0': { c: 3312400, o: 7 }
+            }
+        }
+    },
+    '6x45plus': {
+        name: '6 из 45 Плюс',
+        price: 60,
+        fields: [{ count: 6, min: 1, max: 45 }, { count: 1, min: 1, max: 4 }],
+        expanded: { min: 6, max: 14 },
+        prizes: [
+            { match: '6+1', name: 'Суперприз', multiplier: 1000000 },
+            { match: '6+0', name: 'Приз', multiplier: 100000 },
+            { match: '5+1', name: '5+1', multiplier: 5000 },
+            { match: '5+0', name: '5+0', multiplier: 5000 },
+            { match: '4+1', name: '4+1', multiplier: 100 },
+            { match: '4+0', name: '4+0', multiplier: 100 },
+            { match: '3+1', name: '3+1', multiplier: 10 },
+            { match: '3+0', name: '3+0', multiplier: 10 },
+            { match: '2+1', name: '2+1', multiplier: 0 },
+            { match: '2+0', name: '2+0', multiplier: 0 }
+        ],
+        theory: {
+            total: 32580240,
+            cats: {
+                '6+1': { c: 1, o: 32580240 },
+                '6+0': { c: 3, o: 10860080 },
+                '5+1': { c: 234, o: 139232 },
+                '5+0': { c: 702, o: 46411 },
+                '4+1': { c: 11115, o: 2931 },
+                '4+0': { c: 33345, o: 977 },
+                '3+1': { c: 182780, o: 178 },
+                '3+0': { c: 548340, o: 59 },
+                '2+1': { c: 1233765, o: 26 },
+                '2+0': { c: 3701295, o: 9 }
+            }
+        }
+    },
+    'rapido-pro': {
+        name: 'Рапидо Про',
+        price: 250,
+        fields: [{ count: 8, min: 1, max: 20 }, { count: 1, min: 1, max: 4 }],
+        expanded: { min: 8, max: 12, perField: true },
+        prizes: [
+            { match: '8+1', name: 'Джекпот', multiplier: 10000 },
+            { match: '8+0', name: '8+0', multiplier: 1000 },
+            { match: '7+1', name: '7+1', multiplier: 500 },
+            { match: '7+0', name: '7+0', multiplier: 50 },
+            { match: '6+1', name: '6+1', multiplier: 20 },
+            { match: '6+0', name: '6+0', multiplier: 10 },
+            { match: '5+1', name: '5+1', multiplier: 5 },
+            { match: '5+0', name: '5+0', multiplier: 2 },
+            { match: '4+1', name: '4+1', multiplier: 1 }
+        ],
+        theory: {
+            total: 503880,
+            cats: { '8+1': { c: 1, o: 503880 }, '8+0': { c: 3, o: 167960 }, '7+1': { c: 40, o: 12597 }, '7+0': { c: 120, o: 4199 }, '6+1': { c: 630, o: 800 }, '5+1': { c: 4032, o: 125 }, '4+1': { c: 18480, o: 27 } }
+        }
+    },
+    'rapido-start': {
+        name: 'Рапидо Старт',
+        price: 60,
+        fields: [{ count: 8, min: 1, max: 20 }, { count: 1, min: 1, max: 4 }],
+        expanded: { min: 8, max: 12, perField: true },
+        prizes: [
+            { match: '8+1', name: 'Джекпот', multiplier: 10000 },
+            { match: '8+0', name: '8+0', multiplier: 1000 },
+            { match: '7+1', name: '7+1', multiplier: 500 },
+            { match: '7+0', name: '7+0', multiplier: 50 },
+            { match: '6+1', name: '6+1', multiplier: 20 },
+            { match: '6+0', name: '6+0', multiplier: 10 },
+            { match: '5+1', name: '5+1', multiplier: 5 },
+            { match: '5+0', name: '5+0', multiplier: 2 },
+            { match: '4+1', name: '4+1', multiplier: 1 }
+        ],
+        theory: {
+            total: 503880,
+            cats: { '8+1': { c: 1, o: 503880 }, '8+0': { c: 3, o: 167960 }, '7+1': { c: 40, o: 12597 }, '7+0': { c: 120, o: 4199 }, '6+1': { c: 630, o: 800 }, '5+1': { c: 4032, o: 125 }, '4+1': { c: 18480, o: 27 } }
+        }
+    },
+    'duel': {
+        name: 'Проще, чем дважды два',
+        price: 20,
+        fields: [{ count: 2, min: 1, max: 26 }, { count: 2, min: 1, max: 26 }],
+        expanded: null,
+        prizes: [
+            { match: '2+2', name: 'Суперприз', multiplier: 100000 },
+            { match: '2+1', name: '2+1', multiplier: 1000 },
+            { match: '1+2', name: '1+2', multiplier: 1000 },
+            { match: '2+0', name: '2+0', multiplier: 100 },
+            { match: '0+2', name: '0+2', multiplier: 100 },
+            { match: '1+1', name: '1+1', multiplier: 20 },
+            { match: '1+0', name: '1+0', multiplier: 0 },
+            { match: '0+1', name: '0+1', multiplier: 0 },
+            { match: '0+0', name: '0+0', multiplier: 0 }
+        ],
+        theory: {
+            total: 105625,
+            cats: {
+                '2+2': { c: 1, o: 105625 },
+                '2+1': { c: 48, o: 2201 },
+                '1+2': { c: 48, o: 2201 },
+                '2+0': { c: 276, o: 383 },
+                '0+2': { c: 276, o: 383 },
+                '1+1': { c: 2304, o: 46 },
+                '1+0': { c: 13248, o: 8 },
+                '0+1': { c: 13248, o: 8 },
+                '0+0': { c: 76176, o: 1 }
+            }
+        }
+    },
+    'zabava': {
+        name: 'Забава',
+        price: 150,
+        fields: [{ count: 12, min: 1, max: 24 }],
+        expanded: null,
+        prizes: [
+            { match: 12, name: 'Суперприз', multiplier: 1000000 },
+            { match: 11, name: '11 совп.', multiplier: 5000 },
+            { match: 10, name: '10 совп.', multiplier: 1000 },
+            { match: 9, name: '9 совп.', multiplier: 200 },
+            { match: 8, name: '8 совп.', multiplier: 50 },
+            { match: 7, name: '7 совп.', multiplier: 10 },
+            { match: 6, name: '6 совп.', multiplier: 5 },
+            { match: 5, name: '5 совп.', multiplier: 2 },
+            { match: 4, name: '4 совп.', multiplier: 1 },
+            { match: 3, name: '3 совп.', multiplier: 0 },
+            { match: 2, name: '2 совп.', multiplier: 0 },
+            { match: 1, name: '1 совп.', multiplier: 0 },
+            { match: 0, name: '0 совп.', multiplier: 0 }
+        ],
+        theory: {
+            total: 2704156,
+            cats: {
+                12: { c: 1, o: 2704156 },
+                11: { c: 144, o: 18779 },
+                10: { c: 4356, o: 621 },
+                9: { c: 48400, o: 56 },
+                8: { c: 245025, o: 11 },
+                7: { c: 627264, o: 4 },
+                6: { c: 853776, o: 3 },
+                5: { c: 627264, o: 4 },
+                4: { c: 245025, o: 11 },
+                3: { c: 48400, o: 56 },
+                2: { c: 4356, o: 621 },
+                1: { c: 144, o: 18779 },
+                0: { c: 1, o: 2704156 }
+            }
+        }
+    },
+    'oxota-vyzov': {
+        name: 'Охота. Вызов',
+        price: 20,
+        fields: [{ count: 2, min: 1, max: 26 }, { count: 2, min: 1, max: 26 }],
+        expanded: null,
+        prizes: [
+            { match: '2+2', name: 'Суперприз', multiplier: 100000 },
+            { match: '2+1', name: '2+1', multiplier: 1000 },
+            { match: '1+2', name: '1+2', multiplier: 1000 },
+            { match: '2+0', name: '2+0', multiplier: 100 },
+            { match: '0+2', name: '0+2', multiplier: 100 },
+            { match: '1+1', name: '1+1', multiplier: 20 },
+            { match: '1+0', name: '1+0', multiplier: 0 },
+            { match: '0+1', name: '0+1', multiplier: 0 },
+            { match: '0+0', name: '0+0', multiplier: 0 }
+        ],
+        theory: {
+            total: 105625,
+            cats: {
+                '2+2': { c: 1, o: 105625 },
+                '2+1': { c: 48, o: 2201 },
+                '1+2': { c: 48, o: 2201 },
+                '2+0': { c: 276, o: 383 },
+                '0+2': { c: 276, o: 383 },
+                '1+1': { c: 2304, o: 46 },
+                '1+0': { c: 13248, o: 8 },
+                '0+1': { c: 13248, o: 8 },
+                '0+0': { c: 76176, o: 1 }
             }
         }
     }
@@ -602,12 +771,10 @@ function validateTheory() {
         if (gameKey === 'keno') {
             // КЕНО: C(80,10) — пространство выбора игрока (10 из 80)
             expectedTotal = combinations(80, 10);
-        } else if (gameKey === 'allornothing') {
-            // Всё или Ничего: C(24,12)
-            expectedTotal = combinations(24, 12);
-        } else if (gameKey === 'zodiac') {
-            // Зодиак: 4 независимых поля: день(1-31) × месяц(1-12) × год(0-99) × знак(1-12)
-            expectedTotal = 31 * 12 * 100 * 12;
+        } else if (gameKey === 'duel' || gameKey === 'oxota-vyzov') {
+            expectedTotal = combinations(26, 2) * combinations(26, 2);
+        } else if (gameKey === '6x45plus') {
+            expectedTotal = combinations(45, 6) * combinations(4, 1);
         } else if (game.fields.length === 1) {
             // Одно поле: C(max, count)
             const f = game.fields[0];
@@ -848,12 +1015,12 @@ const GameEngine = {
             const m = winning[0].filter(n => player[0].includes(n)).length;
             matches = [m];
             matchKey = m;
-        } else if (gameKey === '5x36') {
+        } else if (gameKey === '5x36' || gameKey === '6x45plus') {
             const m1 = winning[0].filter(n => player[0].includes(n)).length;
             const m2 = winning[1].filter(n => player[1].includes(n)).length;
             matches = [m1, m2];
             matchKey = `${m1}+${m2}`;
-        } else if (gameKey === '4x20' || gameKey === 'oxota') {
+        } else if (gameKey === '4x20' || gameKey === 'oxota' || gameKey === '4x20mini') {
             const m1 = winning[0].filter(n => player[0].includes(n)).length;
             const m2 = winning[1].filter(n => player[1].includes(n)).length;
             matches = [m1, m2];
@@ -872,7 +1039,7 @@ const GameEngine = {
             else if (m1 === 1 && m2 === 1) matchKey = '1+1';
             else if ((m1 === 1 && m2 === 0) || (m1 === 0 && m2 === 1)) matchKey = '1+0';
             else matchKey = '0+0';
-        } else if (gameKey === 'rapido') {
+        } else if (gameKey === 'rapido' || gameKey === 'rapido-pro' || gameKey === 'rapido-start') {
             const m1 = winning[0].filter(n => player[0].includes(n)).length;
             const m2 = winning[1].filter(n => player[1].includes(n)).length;
             matches = [m1, m2];
@@ -933,14 +1100,15 @@ const GameEngine = {
                     category: prize.category
                 }
             };
-        } else if (gameKey === 'zodiac') {
-            const m = winning.reduce((sum, field, i) => sum + (player[i] && field.includes(player[i][0]) ? 1 : 0), 0);
-            matches = [m];
-            matchKey = m;
-        } else if (gameKey === 'allornothing') {
+        } else if (gameKey === 'zabava') {
             const m = winning[0].filter(n => player[0].includes(n)).length;
             matches = [m];
             matchKey = m;
+        } else if (gameKey === 'duel' || gameKey === 'oxota-vyzov') {
+            const m1 = winning[0].filter(n => player[0].includes(n)).length;
+            const m2 = winning[1].filter(n => player[1].includes(n)).length;
+            matches = [m1, m2];
+            matchKey = m1 + '+' + m2;
         } else {
             const m = winning[0].filter(n => player[0].includes(n)).length;
             matches = [m];
@@ -1671,11 +1839,9 @@ const RealDrawsComparison = {
         '7x49': 'real-draws-7x49.json',
         '4x20': 'real-draws-4x20.json',
         'big': 'real-draws-big.json',
-        'allornothing': 'real-draws-allornothing.json',
         'rapido': 'real-draws-rapido.json',
         'oxota': 'real-draws-oxota.json',
-        'keno': 'real-draws-keno.json',
-        'zodiac': 'real-draws-zodiac.json'
+        'keno': 'real-draws-keno.json'
     },
 
     extractNumbers(gameKey, draw) {
@@ -1684,13 +1850,16 @@ const RealDrawsComparison = {
             case '5x36':
             case '7x49':
             case 'rapido':
-            case 'allornothing':
             case 'keno':
-            case 'zodiac':
+            case 'zabava':
+            case '6x45plus':
                 return draw.numbers || [];
             case '4x20':
             case 'oxota':
             case 'big':
+            case 'duel':
+            case 'oxota-vyzov':
+            case '4x20mini':
                 return (draw.field1 || []).concat(draw.field2 || []);
             default:
                 return [];
@@ -1798,21 +1967,32 @@ const RealDrawsComparison = {
         var results = {};
         var errors = [];
 
-        var fetches = gameKeys.map(function(gameKey) {
-            return fetch(self.fileMap[gameKey])
-                .then(function(resp) {
-                    if (!resp.ok) throw new Error('HTTP ' + resp.status);
-                    return resp.json();
-                })
-                .then(function(data) {
-                    results[gameKey] = data;
-                })
-                .catch(function(e) {
-                    errors.push(gameDefinitions[gameKey].name + ': ' + e.message);
-                });
+        // Используем XMLHttpRequest вместо fetch (работает с file://)
+        var loadPromises = gameKeys.map(function(gameKey) {
+            return new Promise(function(resolve) {
+                var xhr = new XMLHttpRequest();
+                xhr.open('GET', self.fileMap[gameKey], true);
+                xhr.onload = function() {
+                    if (xhr.status >= 200 && xhr.status < 300) {
+                        try {
+                            results[gameKey] = JSON.parse(xhr.responseText);
+                        } catch(e) {
+                            errors.push(gameDefinitions[gameKey].name + ': ' + e.message);
+                        }
+                    } else {
+                        errors.push(gameDefinitions[gameKey].name + ': HTTP ' + xhr.status);
+                    }
+                    resolve();
+                };
+                xhr.onerror = function() {
+                    errors.push(gameDefinitions[gameKey].name + ': Failed to fetch');
+                    resolve();
+                };
+                xhr.send();
+            });
         });
 
-        await Promise.all(fetches);
+        await Promise.all(loadPromises);
 
         var html = '';
 
