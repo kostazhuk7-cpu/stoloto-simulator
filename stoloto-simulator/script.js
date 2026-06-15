@@ -1670,8 +1670,12 @@ const RealDrawsComparison = {
         '5x36': 'real-draws-5x36.json',
         '7x49': 'real-draws-7x49.json',
         '4x20': 'real-draws-4x20.json',
-        'oxota': 'real-draws-okhota.json',
-        'rapido': 'real-draws-rapido.json'
+        'big': 'real-draws-big.json',
+        'allornothing': 'real-draws-allornothing.json',
+        'rapido': 'real-draws-rapido.json',
+        'oxota': 'real-draws-oxota.json',
+        'keno': 'real-draws-keno.json',
+        'zodiac': 'real-draws-zodiac.json'
     },
 
     extractNumbers(gameKey, draw) {
@@ -1680,10 +1684,14 @@ const RealDrawsComparison = {
             case '5x36':
             case '7x49':
             case 'rapido':
-                return draw.numbers;
+            case 'allornothing':
+            case 'keno':
+            case 'zodiac':
+                return draw.numbers || [];
             case '4x20':
             case 'oxota':
-                return draw.field1.concat(draw.field2);
+            case 'big':
+                return (draw.field1 || []).concat(draw.field2 || []);
             default:
                 return [];
         }
