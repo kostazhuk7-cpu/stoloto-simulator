@@ -215,7 +215,8 @@ const state = {
     games: {},
     history: [],
     frequency: {},
-    stats: {}
+    stats: {},
+    generatorFreq: {}  // per-field frequencies from generator (winning numbers)
 };
 
 // ==================== UTILS ====================
@@ -1175,6 +1176,34 @@ const Strategies = {
             const unique = [...new Set(combined)];
             return unique.slice(0, counts[i] || f.count).sort((a, b) => a - b);
         });
+    },
+
+    genhot(gameKey, counts) {
+        // Стратегия «По генератору»: отслеживает частоту выпадающих чисел
+        // от ГСЧ по каждому полю отдельно и выбирает самые частые
+        const game = gameDefinitions[gameKey];
+        if (game.type === 'bingo') return generateBingoTicket();
+        
+        const gf = state.generatorFreq[gameKey];
+        if (!gf || Object.keys(gf).length === 0) {
+            // Нет данных — fallback на случайный выбор
+            return this.random(gameKey, counts);
+        }
+        
+        return game.fields.map((f, i) => {
+            const fieldFreq = gf[i] || {};
+            const sorted = Object.entries(fieldFreq)
+                .sort((a, b) => b[1] - a[1])
+                .map(([n]) => parseInt(n));
+            if (sorted.length === 0) return generateUniqueNumbers(counts[i] || f.count, f.min, f.max);
+            // Берём топ-N самых частых; если не хватает — добавляем случайные
+            const pick = sorted.slice(0, counts[i] || f.count);
+            while (pick.length < (counts[i] || f.count)) {
+                const rn = getRandomInt(f.min, f.max);
+                if (!pick.includes(rn)) pick.push(rn);
+            }
+            return pick.sort((a, b) => a - b);
+        });
     }
 };
 
@@ -1309,17 +1338,22 @@ async function runParallelDraw(gameKeys) {
 
         // Update frequency
         if (gameDefinitions[gameKey].type === 'bingo') {
-            // For bingo, winning = [moves, pool]
             const moves = winning[0];
             moves.forEach(n => {
                 if (!state.frequency[gameKey]) state.frequency[gameKey] = {};
                 state.frequency[gameKey][n] = (state.frequency[gameKey][n] || 0) + 1;
             });
         } else {
-            winning.forEach(field => {
+            winning.forEach((field, fi) => {
                 field.forEach(n => {
                     if (!state.frequency[gameKey]) state.frequency[gameKey] = {};
                     state.frequency[gameKey][n] = (state.frequency[gameKey][n] || 0) + 1;
+                });
+                // Per-field generator frequency tracking (for genhot strategy)
+                if (!state.generatorFreq[gameKey]) state.generatorFreq[gameKey] = {};
+                if (!state.generatorFreq[gameKey][fi]) state.generatorFreq[gameKey][fi] = {};
+                field.forEach(n => {
+                    state.generatorFreq[gameKey][fi][n] = (state.generatorFreq[gameKey][fi][n] || 0) + 1;
                 });
             });
         }
@@ -1722,6 +1756,7 @@ if (typeof document !== 'undefined') {
         document.getElementById('clearBtn').addEventListener('click', () => {
             state.history = [];
             state.frequency = {};
+            state.generatorFreq = {};
             state.stats = {};
             Logger.clear();
             Object.keys(gameDefinitions).forEach(key => {
@@ -1742,7 +1777,8 @@ if (typeof document !== 'undefined') {
             const info = document.getElementById('strategyInfo');
             const desc = {
                 random: 'Случайный выбор каждый тираж',
-                frequency: 'Выбирает самые частые числа из истории',
+                genhot: 'Следит за ГСЧ: выбирает числа, которые генератор выдаёт чаще (по полям)',
+                frequency: 'Выбирает самые частые числа из истории тиражей',
                 cold: 'Выбирает самые редкие (холодные) числа',
                 mixed: 'Комбинирует горячие и случайные'
             };
