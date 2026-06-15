@@ -30,23 +30,38 @@
             </section>
 
             <section class="section">
-                <h3>Стратегия подставщика</h3>
+                <h3>Фаза 1: Накопление данных</h3>
                 <select id="strategy">
+                    <option value="random">Случайный выбор</option>
+                    <option value="frequency">Горячие числа (история)</option>
+                    <option value="cold">Холодные числа (редкие)</option>
+                    <option value="mixed">Смешанная стратегия</option>
+                </select>
+                <div id="strategyInfo" class="info-text">Случайный выбор каждый тираж</div>
+                <div class="info-text" style="margin-top:4px;color:#4a9eff;">Любая стратегия накапливает логи генератора (частоты ГСЧ).</div>
+            </section>
+
+            <section class="section" style="border-left: 2px solid #f0a500; padding-left: 8px;">
+                <h3>Фаза 2: Стратегия по генератору</h3>
+                <select id="strategy2">
                     <option value="random">Случайный выбор</option>
                     <option value="genhot">По генератору (частоты ГСЧ)</option>
                     <option value="frequency">Горячие числа (история)</option>
                     <option value="cold">Холодные числа (редкие)</option>
                     <option value="mixed">Смешанная стратегия</option>
                 </select>
-                <div id="strategyInfo" class="info-text">Случайный выбор каждый тираж</div>
+                <div id="strategyInfo2" class="info-text">Выбери стратегию для сравнения</div>
+                <div class="info-text" style="margin-top:4px;color:#f0a500;">Запусти после накопления логов — сравни результат с Фазой 1.</div>
             </section>
 
             <section class="section">
                 <h3>Симуляция</h3>
                 <label>Интервал (мс):</label>
                 <input type="number" id="intervalMs" value="50" min="1" max="5000">
-                <button id="toggleBtn" class="btn btn-primary">▶ Запустить все игры</button>
+                <button id="toggleBtn" class="btn btn-primary">▶ Запустить — Фаза 1</button>
+                <button id="toggleBtn2" class="btn btn-warning" style="background:#f0a500;color:#000;">▶ Запустить — Фаза 2</button>
                 <button id="clearBtn" class="btn btn-danger">Сбросить всё</button>
+                <button id="clearGenBtn" class="btn btn-small">Сбросить логи ГСЧ</button>
             </section>
 
             <section class="section">

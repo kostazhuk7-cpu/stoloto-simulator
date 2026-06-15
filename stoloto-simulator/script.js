@@ -1214,6 +1214,7 @@ function getPlayerNumbers(gameKey, strategy, counts) {
 // ==================== PARALLEL SIMULATION ====================
 let simulationTimer = null;
 let isRunningInfinite = false;
+let currentPhase = 1;  // 1 = стандартные стратегии, 2 = стратегия по генератору
 
 function toggleSimulation() {
     if (isRunningInfinite) stopSimulation();
@@ -1224,7 +1225,8 @@ function startSimulation() {
     if (state.isRunning) return;
     isRunningInfinite = true;
     
-    const btn = document.getElementById('toggleBtn');
+    const btnId = currentPhase === 2 ? 'toggleBtn2' : 'toggleBtn';
+    const btn = document.getElementById(btnId);
     btn.textContent = '⏹ Остановить';
     btn.classList.add('btn-active');
     
@@ -1246,9 +1248,12 @@ function stopSimulation() {
     clearInterval(simulationTimer);
     simulationTimer = null;
     
-    const btn = document.getElementById('toggleBtn');
-    btn.textContent = '▶ Запустить';
-    btn.classList.remove('btn-active');
+    const btn1 = document.getElementById('toggleBtn');
+    btn1.textContent = '▶ Запустить — Фаза 1';
+    btn1.classList.remove('btn-active');
+    const btn2 = document.getElementById('toggleBtn2');
+    btn2.textContent = '▶ Запустить — Фаза 2';
+    btn2.classList.remove('btn-active');
     
     document.getElementById('gameContainer').querySelectorAll('input, select').forEach(el => el.disabled = false);
 }
@@ -1267,7 +1272,9 @@ async function runParallelDraw(gameKeys) {
     state.isRunning = true;
     
     const rngSource = document.getElementById('rngSource').value;
-    const strategy = document.getElementById('strategy').value;
+    const strategy = currentPhase === 2
+        ? document.getElementById('strategy2').value
+        : document.getElementById('strategy').value;
     
     // Random RNG selection for each draw
     let usedRNG;
@@ -1773,7 +1780,15 @@ if (typeof document !== 'undefined') {
         buildGameCards();
         updateSummaryTable();
         
-        document.getElementById('toggleBtn').addEventListener('click', toggleSimulation);
+        document.getElementById('toggleBtn').addEventListener('click', () => {
+            currentPhase = 1;
+            toggleSimulation();
+        });
+        
+        document.getElementById('toggleBtn2').addEventListener('click', () => {
+            currentPhase = 2;
+            toggleSimulation();
+        });
         
         document.getElementById('clearBtn').addEventListener('click', () => {
             state.history = [];
@@ -1790,6 +1805,13 @@ if (typeof document !== 'undefined') {
             document.getElementById('totalDraws').textContent = '0';
         });
 
+        document.getElementById('clearGenBtn').addEventListener('click', () => {
+            state.generatorFreq = {};
+            document.querySelectorAll('.game-mini-stats').forEach(el => {
+                el.innerHTML = el.innerHTML.replace(/<div class="genfreq-mini">[\s\S]*?<\/div>/g, '');
+            });
+        });
+
         document.getElementById('exportBtn').addEventListener('click', exportCSV);
         document.getElementById('exportJsonBtn').addEventListener('click', exportJSON);
         document.getElementById('validateBtn').addEventListener('click', runValidation);
@@ -1799,6 +1821,18 @@ if (typeof document !== 'undefined') {
             const info = document.getElementById('strategyInfo');
             const desc = {
                 random: 'Случайный выбор каждый тираж',
+                frequency: 'Выбирает самые частые числа из истории тиражей',
+                cold: 'Выбирает самые редкие (холодные) числа',
+                mixed: 'Комбинирует горячие и случайные'
+            };
+            info.textContent = desc[strategy];
+        });
+
+        document.getElementById('strategy2').addEventListener('change', () => {
+            const strategy = document.getElementById('strategy2').value;
+            const info = document.getElementById('strategyInfo2');
+            const desc = {
+                random: 'Случайный выбор (контроль)',
                 genhot: 'Следит за ГСЧ: выбирает числа, которые генератор выдаёт чаще (по полям)',
                 frequency: 'Выбирает самые частые числа из истории тиражей',
                 cold: 'Выбирает самые редкие (холодные) числа',
