@@ -215,9 +215,7 @@ const state = {
     games: {},
     history: [],
     frequency: {},
-    stats: {},
-    expandedBet: false,
-    expandedSize: {}
+    stats: {}
 };
 
 // ==================== UTILS ====================
@@ -975,18 +973,9 @@ function checkBingoResult(ticket, moves, maxMoves) {
 
 // ==================== GAME ENGINE ====================
 const GameEngine = {
-    runDraw(gameKey, expandedCount) {
+    runDraw(gameKey) {
         const game = gameDefinitions[gameKey];
         let counts = game.fields ? game.fields.map(f => f.count) : [];
-        
-        if (expandedCount && state.expandedBet && game.fields) {
-            counts = game.fields.map((f, i) => {
-                if (game.expanded && game.expanded.perField) {
-                    return expandedCount[i] || f.count;
-                }
-                return expandedCount[0] || f.count;
-            });
-        }
         
         let winning;
         if (gameKey === 'keno') {
@@ -1116,8 +1105,7 @@ const GameEngine = {
         }
 
         const prize = game.prizes.find(p => p.match === matchKey);
-        const comboCount = counts ? this.calcComboCount(gameKey, counts) : 1;
-        const ticketPrice = game.price * comboCount;
+        const ticketPrice = game.price;
         
         return {
             matches,
@@ -1125,24 +1113,9 @@ const GameEngine = {
             prize: prize || null,
             winAmount: prize ? prize.multiplier : 0,
             isWin: !!(prize && prize.multiplier > 0),
-            comboCount,
-            ticketPrice
+            comboCount: 1,
+            ticketPrice: game.price
         };
-    },
-
-    calcComboCount(gameKey, counts) {
-        const game = gameDefinitions[gameKey];
-        if (!game.fields) return 1;
-        let combos = 1;
-        game.fields.forEach((f, i) => {
-            const c = counts[i] || f.count;
-            if (gameKey === 'keno') {
-                combos *= c >= f.count ? combinations(c, f.count) : 1;
-            } else {
-                combos *= combinations(c, f.count);
-            }
-        });
-        return combos;
     }
 };
 
@@ -1257,21 +1230,7 @@ function getActiveGameKeys() {
 
 function getExpandedCounts(gameKey) {
     const game = gameDefinitions[gameKey];
-    if (!game.fields || !game.expanded || !state.expandedBet) return game.fields ? game.fields.map(f => f.count) : [1];
-    
-    const container = document.getElementById(`game-${gameKey}`);
-    if (!container) return game.fields.map(f => f.count);
-    
-    if (game.expanded.perField) {
-        return game.fields.map((f, i) => {
-            const input = container.querySelector(`.expanded-count[data-field="${i}"]`);
-            return parseInt(input?.value) || f.count;
-        });
-    } else {
-        const input = container.querySelector('.expanded-count');
-        const count = parseInt(input?.value) || game.expanded.min;
-        return game.fields.map(() => count);
-    }
+    return game.fields ? game.fields.map(f => f.count) : [];
 }
 
 async function runParallelDraw(gameKeys) {
@@ -1297,7 +1256,7 @@ async function runParallelDraw(gameKeys) {
     
     for (const gameKey of gameKeys) {
         const counts = getExpandedCounts(gameKey);
-        const { winning } = GameEngine.runDraw(gameKey, counts);
+        const { winning } = GameEngine.runDraw(gameKey);
         const player = getPlayerNumbers(gameKey, strategy, counts);
         const result = GameEngine.checkResult(gameKey, winning, player, counts);
         
@@ -1720,7 +1679,6 @@ function buildGameCards() {
     
     let html = '';
     Object.entries(gameDefinitions).forEach(([key, game]) => {
-        const hasExpanded = game.expanded && typeof game.expanded === 'object';
         html += `
             <div class="game-card" id="game-${key}">
                 <div class="game-header">
@@ -1743,20 +1701,6 @@ function buildGameCards() {
                     </div>
                     <div class="game-result"></div>
                     <div class="game-mini-stats"></div>
-                    ${hasExpanded ? `
-                        <div class="expanded-controls" style="display: ${state.expandedBet ? 'block' : 'none'}">
-                            <label>Развёрнутая ставка:</label>
-                            ${game.expanded.perField ? 
-                                game.fields.map((f, i) => `
-                                    <input type="number" class="expanded-count" data-field="${i}" 
-                                        value="${f.count}" min="${f.count}" max="${game.expanded.max}" 
-                                        title="Поле ${i+1}: ${f.count}-${game.expanded.max} чисел">
-                                `).join('')
-                                : `<input type="number" class="expanded-count" value="${game.fields[0].count}" min="${game.expanded.min}" max="${game.expanded.max}">`
-                            }
-                            <span class="combo-info"></span>
-                        </div>
-                    ` : ''}
                 </div>
             </div>
         `;
@@ -1792,13 +1736,6 @@ if (typeof document !== 'undefined') {
         document.getElementById('exportBtn').addEventListener('click', exportCSV);
         document.getElementById('exportJsonBtn').addEventListener('click', exportJSON);
         document.getElementById('validateBtn').addEventListener('click', runValidation);
-        
-        document.getElementById('expandedToggle').addEventListener('change', (e) => {
-            state.expandedBet = e.target.checked;
-            document.querySelectorAll('.expanded-controls').forEach(el => {
-                el.style.display = state.expandedBet ? 'block' : 'none';
-            });
-        });
         
         document.getElementById('strategy').addEventListener('change', () => {
             const strategy = document.getElementById('strategy').value;
