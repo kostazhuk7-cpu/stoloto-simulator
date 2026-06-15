@@ -216,7 +216,8 @@ const state = {
     history: [],
     frequency: {},
     stats: {},
-    generatorFreq: {}  // per-field frequencies from generator (winning numbers)
+    statsGen: {},     // отдельная статистика для стратегии genhot
+    generatorFreq: {}
 };
 
 // ==================== UTILS ====================
@@ -1214,7 +1215,6 @@ function getPlayerNumbers(gameKey, strategy, counts) {
 // ==================== PARALLEL SIMULATION ====================
 let simulationTimer = null;
 let isRunningInfinite = false;
-let currentPhase = 1;  // 1 = стандартные стратегии, 2 = стратегия по генератору
 
 function toggleSimulation() {
     if (isRunningInfinite) stopSimulation();
@@ -1225,8 +1225,7 @@ function startSimulation() {
     if (state.isRunning) return;
     isRunningInfinite = true;
     
-    const btnId = currentPhase === 2 ? 'toggleBtn2' : 'toggleBtn';
-    const btn = document.getElementById(btnId);
+    const btn = document.getElementById('toggleBtn');
     btn.textContent = '⏹ Остановить';
     btn.classList.add('btn-active');
     
@@ -1248,12 +1247,9 @@ function stopSimulation() {
     clearInterval(simulationTimer);
     simulationTimer = null;
     
-    const btn1 = document.getElementById('toggleBtn');
-    btn1.textContent = '▶ Запустить — Фаза 1';
-    btn1.classList.remove('btn-active');
-    const btn2 = document.getElementById('toggleBtn2');
-    btn2.textContent = '▶ Запустить — Фаза 2';
-    btn2.classList.remove('btn-active');
+    const btn = document.getElementById('toggleBtn');
+    btn.textContent = '▶ Запустить все игры';
+    btn.classList.remove('btn-active');
     
     document.getElementById('gameContainer').querySelectorAll('input, select').forEach(el => el.disabled = false);
 }
@@ -1272,9 +1268,7 @@ async function runParallelDraw(gameKeys) {
     state.isRunning = true;
     
     const rngSource = document.getElementById('rngSource').value;
-    const strategy = currentPhase === 2
-        ? document.getElementById('strategy2').value
-        : document.getElementById('strategy').value;
+    const strategy = document.getElementById('strategy').value;
     
     // Random RNG selection for each draw
     let usedRNG;
@@ -1363,6 +1357,25 @@ async function runParallelDraw(gameKeys) {
                     state.generatorFreq[gameKey][fi][n] = (state.generatorFreq[gameKey][fi][n] || 0) + 1;
                 });
             });
+        }
+
+        // Run genhot strategy on same winning numbers (parallel, separate stats)
+        if (gameDefinitions[gameKey].type !== 'bingo') {
+            if (!state.statsGen[gameKey]) {
+                state.statsGen[gameKey] = { total: 0, wins: 0, losses: 0, categories: {}, spent: 0, won: 0 };
+            }
+            const genPlayer = Strategies.genhot(gameKey, counts);
+            const genResult = GameEngine.checkResult(gameKey, winning, genPlayer, counts);
+            const sg = state.statsGen[gameKey];
+            sg.total++;
+            sg.spent += genResult.ticketPrice;
+            if (genResult.isWin) {
+                sg.wins++;
+                sg.won += genResult.winAmount;
+                sg.categories[genResult.matchKey.toString()] = (sg.categories[genResult.matchKey.toString()] || 0) + 1;
+            } else {
+                sg.losses++;
+            }
         }
 
         state.history.push({ gameKey, winning, player, result, counts, timestamp: Date.now() });
@@ -1550,9 +1563,13 @@ function updateSummaryTable() {
     allKeys.forEach(key => {
         const game = gameDefinitions[key];
         const s = state.stats[key] || { total: 0, wins: 0, spent: 0, won: 0 };
+        const sg = state.statsGen[key] || { total: 0, wins: 0, spent: 0, won: 0 };
         const winRate = s.total > 0 ? (s.wins / s.total * 100).toFixed(1) : 0;
+        const winRateG = sg.total > 0 ? (sg.wins / sg.total * 100).toFixed(1) : 0;
         const roi = s.spent > 0 ? ((s.won - s.spent) / s.spent * 100).toFixed(1) : 0;
+        const roiG = sg.spent > 0 ? ((sg.won - sg.spent) / sg.spent * 100).toFixed(1) : 0;
         const avgWin = s.wins > 0 ? (s.won / s.wins).toFixed(0) : 0;
+        const avgWinG = sg.wins > 0 ? (sg.won / sg.wins).toFixed(0) : 0;
         const theory = game.theory;
         const jackpotKey = game.prizes[0].match;
         const jackpotOdds = theory.cats[jackpotKey] ? theory.cats[jackpotKey].o : theory.cats[Object.keys(theory.cats).pop()].o;
@@ -1563,13 +1580,19 @@ function updateSummaryTable() {
             <td>${game.price}₽</td>
             <td>${s.total}</td>
             <td>${s.wins}</td>
+            <td class="gen-cell">${sg.wins}</td>
             <td>${winRate}%</td>
+            <td class="gen-cell">${winRateG}%</td>
             <td>${formatOdds(jackpotOdds)}</td>
             <td>${formatOdds(anyWinOdds)}</td>
             <td>${avgWin}₽</td>
+            <td class="gen-cell">${avgWinG}₽</td>
             <td>${s.won}₽</td>
+            <td class="gen-cell">${sg.won}₽</td>
             <td class="${roi >= 0 ? 'pos' : 'neg'}">${roi}%</td>
+            <td class="gen-cell ${roiG >= 0 ? 'pos' : 'neg'}">${roiG}%</td>
             <td>${s.won - s.spent}₽</td>
+            <td class="gen-cell">${sg.won - sg.spent}₽</td>
         </tr>`;
     });
     
@@ -1780,21 +1803,14 @@ if (typeof document !== 'undefined') {
         buildGameCards();
         updateSummaryTable();
         
-        document.getElementById('toggleBtn').addEventListener('click', () => {
-            currentPhase = 1;
-            toggleSimulation();
-        });
-        
-        document.getElementById('toggleBtn2').addEventListener('click', () => {
-            currentPhase = 2;
-            toggleSimulation();
-        });
+        document.getElementById('toggleBtn').addEventListener('click', toggleSimulation);
         
         document.getElementById('clearBtn').addEventListener('click', () => {
             state.history = [];
             state.frequency = {};
             state.generatorFreq = {};
             state.stats = {};
+            state.statsGen = {};
             Logger.clear();
             Object.keys(gameDefinitions).forEach(key => {
                 state.stats[key] = { total: 0, wins: 0, losses: 0, categories: {}, spent: 0, won: 0 };
@@ -1821,19 +1837,6 @@ if (typeof document !== 'undefined') {
             const info = document.getElementById('strategyInfo');
             const desc = {
                 random: 'Случайный выбор каждый тираж',
-                frequency: 'Выбирает самые частые числа из истории тиражей',
-                cold: 'Выбирает самые редкие (холодные) числа',
-                mixed: 'Комбинирует горячие и случайные'
-            };
-            info.textContent = desc[strategy];
-        });
-
-        document.getElementById('strategy2').addEventListener('change', () => {
-            const strategy = document.getElementById('strategy2').value;
-            const info = document.getElementById('strategyInfo2');
-            const desc = {
-                random: 'Случайный выбор (контроль)',
-                genhot: 'Следит за ГСЧ: выбирает числа, которые генератор выдаёт чаще (по полям)',
                 frequency: 'Выбирает самые частые числа из истории тиражей',
                 cold: 'Выбирает самые редкие (холодные) числа',
                 mixed: 'Комбинирует горячие и случайные'
