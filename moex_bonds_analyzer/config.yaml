@@ -1,0 +1,23 @@
+broker_commission: 0.0004
+cbonds:
+  login: ''
+  password: ''
+investment_horizon_days: 730
+risk_free_rate: null
+scoring:
+  credit_weight: 0.2
+  dts_weight: 0.15
+  duration_weight: 0.15
+  liquidity_weight: 0.1
+  scenario_weight: 0.1
+  tax_weight: 0.05
+  yield_weight: 0.25
+tax_rate: 0.13
+thresholds:
+  buy_score: 0.65
+  sell_score: 0.4
+  yield_spread_over_rf: 0.02
+tinvest:
+  account_id: '2167604537'
+  sandbox: false
+  token: 't.rlc71tNNY19y_-dkfUn-k9-nd0W0lC-vRdF0JGWanC45m8sBcJwVb4dAM7bJxAXDU0i6kHEq9wVCE8ippMHI_A'
